@@ -1,5 +1,9 @@
 # Lancer
 
+<p align="center">
+  <img src="docs/branding/lancer-readme-banner.png" alt="Lancer — agent-native desktop workspace" width="100%" />
+</p>
+
 Lancer 是基于 [pi-gui](https://github.com/minghinmatthewlam/pi-gui) 和 [pi](https://github.com/earendil-works/pi) 的桌面 AI 工作区。把会话、并行分支、运行过程和交付文件放在一起，方便追溯一次任务从开始到结束的过程。
 
 **当前为开发中的 Alpha。** 源码仓库：https://github.com/raylee-ai/lancer 。macOS Apple Silicon 是主要验证平台，Linux / Windows 的打包配置不代表所有原生功能已经验证。
