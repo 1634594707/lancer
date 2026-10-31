@@ -1,0 +1,55 @@
+.process-handoff-card {
+  margin-block: 6px 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line, #e5e7eb);
+  border-inline-start: 2px solid var(--lc, #7186bd);
+  border-radius: 7px;
+  background: var(--bg, #fff);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.process-handoff-card > header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block-end: 7px;
+}
+.process-handoff-card > header svg { inline-size: 14px; block-size: 14px; flex: none; }
+.process-handoff-card > header strong { font-weight: 550; }
+.process-handoff-card > header small {
+  margin-inline-start: auto;
+  color: var(--tx2, #68727c);
+  font-size: 11px;
+}
+.process-handoff-card__row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 8px;
+  margin-block: 3px;
+  color: var(--tx2, #68727c);
+}
+.process-handoff-card__row > span { color: var(--tx3, #8a919b); }
+.process-handoff-card__row code { display: block; overflow-wrap: anywhere; font-size: 11px; }
+.process-handoff-card__row p { margin: 0; }
+.process-tool-step__terminal {
+  padding: 8px 11px;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 6px;
+  background: var(--bg2, #f7f9fb);
+  max-block-size: 240px;
+  overflow: auto;
+}
+.process-tool-step__terminal pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 11px/1.6 var(--mono, ui-monospace, monospace);
+}
+.process-tool-step__command { color: var(--tx, #303944); }
+.process-tool-step__output { color: var(--tx2, #73808d); }
+.process-tool-step__command + .process-tool-step__output { margin-block-start: 5px; }
+.lancer-process .eh.op {
+  background: color-mix(in srgb, var(--lc, #408bde) 4%, transparent);
+  box-shadow: inset 2px 0 0 var(--lc, #408bde);
+}

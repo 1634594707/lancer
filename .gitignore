@@ -34,9 +34,14 @@ index.html
 !apps/**/index.html
 !packages/light-ui/demo/index.html
 
-# Vite hashed build output (anywhere)
-*-[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9].js
-*-[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9].css
+# Vite hashed build output (anywhere).
+# Require hex-only 8-char suffixes so hand-authored names like
+# process-evidence.css (letter-only suffix) are not matched.
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].js
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].css
+
+# Keep desktop source CSS tracked even if a future hash pattern widens.
+!/apps/desktop/src/**/*.css
 
 # Hand-authored assets for the zero-build local control dashboard.
 !/scripts/lancer-ctl-dashboard/dashboard.js
