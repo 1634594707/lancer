@@ -1,0 +1,12 @@
+{
+  "process_id": "lancer.video_learn_remake.v1",
+  "video_id": "demo_v001",
+  "step": "watch",
+  "status_code": "watch.ok",
+  "ts": "2026-10-26T10:05:01+08:00",
+  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifacts": {
+    "learning_spec": "learning/demo_v001/spec.json"
+  },
+  "error_code": null
+}

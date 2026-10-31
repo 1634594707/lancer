@@ -1,0 +1,41 @@
+packages:
+  - apps/*
+  - packages/*
+  - video
+
+onlyBuiltDependencies:
+  - electron
+  - electron-winstaller
+  - esbuild
+  - koffi
+  - node-pty
+  - protobufjs
+  - sharp
+
+# Security backports for transitive dependencies whose parents still pin older
+# releases. Scope overrides to affected consumers; basic-ftp's 6.x security fix
+# retains the client API used by get-uri's FTP transport.
+overrides:
+  # Match the supported Electron 43 native-module ABI during packaging.
+  "@electron/rebuild>node-abi": 4.40.0
+  "basic-ftp@>=5 <6.2.1": 6.2.3
+  "js-yaml@>=4 <4.3.2": 4.3.2
+  "@babel/core@>=7 <7.29.6": 7.29.6
+  "sharp@>=0.34 <0.35.5": 0.35.5
+  "undici@>=8 <8.12.3": 8.12.3
+  "postcss@>=8 <8.5.32": 8.5.32
+  "ws@>=8 <8.22.0": 8.22.0
+  "fast-uri@>=3 <3.1.9": 3.1.9
+  "nanoid@>=3 <3.3.20": 3.3.20
+  "ip-address@>=10 <10.7.5": 10.7.5
+  "zod@>=4 <4.6.7": 4.6.7
+  "postcss-selector-parser@>=7 <7.1.7": 7.1.7
+  "browserslist@>=4 <4.29.5": 4.29.5
+  "source-map-js@>=1 <1.2.2": 1.2.2
+  "baseline-browser-mapping@>=2 <2.11.34": 2.11.34
+  "picomatch@>=4 <4.0.4": 4.0.4
+  "lodash@>=4 <4.18.0": 4.18.1
+  "@xmldom/xmldom@>=0.8 <0.8.15": 0.8.15
+  "tmp@>=0.2 <0.2.7": 0.2.7
+  "form-data@>=4 <4.0.6": 4.0.6
+  "tar@>=7 <7.5.21": 7.5.21

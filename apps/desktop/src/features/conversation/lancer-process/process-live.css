@@ -1,0 +1,126 @@
+/* The native controls live outside the legacy .shell--lancer. Bind them to the
+ * same light surface as the reference without replacing their runtime owners. */
+@scope (.lancer-process) {
+  :scope[data-native-window="darwin"] .tdots {
+    visibility: hidden;
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  :scope[data-native-window="darwin"] .tbar {
+    padding-left: max(var(--titlebar-controls-inset), env(titlebar-area-x, 0px));
+  }
+
+  .process-surface-composer > footer.composer {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+  }
+  .conversation--composer {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+  .composer__surface {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 12px 8px;
+    background: var(--bg);
+    box-shadow: none;
+  }
+  .composer__surface:focus-within {
+    border-color: var(--tx2);
+    box-shadow: none;
+  }
+  .composer__editor textarea:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+  .composer__editor textarea {
+    min-height: 22px;
+    font: inherit;
+    font-size: 13px;
+    line-height: 22px;
+    color: var(--tx);
+  }
+  .composer__editor {
+    gap: 0;
+  }
+  .composer__editor textarea::placeholder {
+    color: var(--tx3);
+  }
+  .composer__bar {
+    margin-top: 0;
+  }
+  .composer__footer-row {
+    min-height: 26px;
+    gap: 10px;
+  }
+  .composer__config button {
+    height: 22px;
+    min-height: 22px;
+    padding: 0 4px;
+    background: transparent;
+    border-color: transparent;
+    color: var(--tx2);
+    font-size: 11px;
+  }
+  .composer__actions .composer__attach,
+  .composer__actions .button--cta-icon {
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    min-height: 26px;
+    border-radius: 6px;
+    padding: 0;
+    justify-content: center;
+  }
+  .composer__actions .button--cta-icon {
+    background: var(--tx);
+    color: var(--bg);
+    border-color: var(--tx);
+  }
+}
+
+.lancer-process .process-empty-group {
+  margin: 4px 14px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.lancer-process .strip4 button:disabled {
+  cursor: default;
+}
+
+/* New conversations keep the same shell and bottom composer as active chats. */
+.lancer-process .process-new-thread-blank {
+  flex: 1;
+  min-height: 0;
+}
+.lancer-process .canvas--new-thread {
+  padding: 0;
+  overflow: visible;
+}
+.lancer-process .new-thread {
+  min-height: 0;
+  padding: 0;
+}
+.lancer-process .new-thread__composer {
+  width: 100%;
+}
+.lancer-process .new-thread__textarea {
+  min-height: 22px;
+}
+
+.lancer-process .new-thread__composer.composer {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  width: min(680px, calc(100% - 56px));
+}
+.lancer-process .new-thread__composer .composer {
+  width: 100%;
+}

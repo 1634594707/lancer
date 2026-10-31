@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "duration_ms",
+    "fps",
+    "frame_count",
+    "width",
+    "height",
+    "keyframes",
+    "audio",
+    "schema_version",
+    "video_id",
+    "source_sha256"
+  ],
+  "properties": {
+    "duration_ms": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "fps": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "frame_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "keyframes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frame_index", "pts_ms"],
+        "properties": {
+          "frame_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pts_ms": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "audio": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["codec", "sample_rate", "channels"],
+          "properties": {
+            "codec": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sample_rate": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "channels": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "media.v1"
+    },
+    "video_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

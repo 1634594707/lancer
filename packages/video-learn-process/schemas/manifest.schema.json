@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lancer.video_learn_remake.manifest.v2",
+  "title": "DownloadManifest",
+  "description": "下载字节身份清单；download.ok仅表示文件与哈希，不表示媒体探测或视觉分析完成。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "video_id",
+    "douyin_url",
+    "local_path",
+    "sha256",
+    "byte_size",
+    "status_code",
+    "downloaded_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "manifest.v2"
+    },
+    "video_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_\\-]+$",
+      "description": "稳定 ID；目录名与所有下游文件共用"
+    },
+    "douyin_url": {
+      "type": "string",
+      "minLength": 1,
+      "description": "原始抖音链接（url 字段）"
+    },
+    "local_path": {
+      "type": "string",
+      "pattern": "^raw/videos/",
+      "description": "相对项目根的原片路径（path 字段）"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "原片整文件 SHA-256"
+    },
+    "byte_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "byte_range": {
+      "type": "object",
+      "description": "可选；整文件时 [0, byte_size)",
+      "required": ["start", "end"],
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fps": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "frame_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "container": {
+      "type": "string",
+      "enum": ["mp4", "webm", "mov", "mkv", "other"]
+    },
+    "status_code": {
+      "type": "string",
+      "enum": ["download.ok", "download.fail", "download.hash_mismatch"],
+      "description": "仅 download.ok 可进入 media；禁止直接跳到 analysis。"
+    },
+    "downloaded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "downloader": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error_code": {
+      "type": ["string", "null"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status_code": {
+            "const": "download.ok"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error_code": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

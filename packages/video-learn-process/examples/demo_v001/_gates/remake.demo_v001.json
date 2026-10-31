@@ -1,0 +1,11 @@
+{
+  "process_id": "lancer.video_learn_remake.v1",
+  "video_id": "demo_v001",
+  "step": "remake",
+  "status_code": "remake.skipped_by_policy",
+  "ts": "2026-10-26T10:06:01+08:00",
+  "artifacts": {
+    "job": "remake/out/demo_v001/job.json"
+  },
+  "error_code": null
+}

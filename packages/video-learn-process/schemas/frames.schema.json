@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "video_id", "source_sha256", "sampling", "frames"],
+  "properties": {
+    "schema_version": {
+      "const": "frames.v1"
+    },
+    "video_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interval_seconds", "scene_threshold"],
+      "properties": {
+        "interval_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "scene_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "frames": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frame_index", "pts_ms", "path", "sha256"],
+        "properties": {
+          "frame_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pts_ms": {
+            "type": "number",
+            "minimum": 0
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

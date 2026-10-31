@@ -1,0 +1,117 @@
+/* Quiet transcript rows; execution and deliverables carry the visual emphasis. */
+@scope (.lancer-process .main) {
+  :scope {
+    container-type: inline-size;
+  }
+  .cvh {
+    padding-block: 10px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .cvh .tg {
+    inline-size: 6px;
+    block-size: 6px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
+  }
+  .cc {
+    width: min(720px, calc(100% - 48px));
+  }
+  .um,
+  .process-user__bubble {
+    max-width: 88%;
+    padding: 10px 14px;
+    border-radius: 10px 10px 3px 10px;
+    background: var(--bg2);
+    color: var(--tx);
+    margin-block: 8px 16px;
+  }
+  .am.process-assistant {
+    inline-size: 100%;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    align-self: flex-start;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 6px;
+    margin-block: 8px 4px;
+  }
+  .am .who {
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    color: var(--tx2);
+  }
+  .process-message-time {
+    margin-inline-start: 2px;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+  }
+  .am .tx {
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .am .who .shell-assistant-avatar {
+    inline-size: 24px;
+    block-size: 24px;
+  }
+  .cmp {
+    border-top: 1px solid var(--line);
+    padding-block: 12px;
+  }
+  .conversation--composer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .composer__config button {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .composer__surface {
+    border-radius: 12px;
+    box-shadow: none;
+  }
+  @container (max-width: 520px) {
+    .cmp .composer {
+      width: calc(100% - 24px);
+    }
+    .composer__footer-row {
+      flex-wrap: wrap;
+    }
+    .composer__actions {
+      margin-inline-start: auto;
+    }
+    .cc {
+      width: calc(100% - 32px);
+    }
+    .cvh {
+      padding-inline: 16px;
+    }
+    .module-workflow {
+      padding-inline: 12px;
+    }
+    .module-workflow__module {
+      max-inline-size: 72px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+@scope (.lancer-process .main) {
+  .am.process-assistant .timeline-item__actions {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    margin: 0;
+    border-radius: 6px;
+    background: var(--bg);
+  }
+  .am.process-assistant .message__content > :last-child {
+    margin-bottom: 0;
+  }
+}

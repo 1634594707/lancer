@@ -1,0 +1,44 @@
+/* Relay chrome only: keep the measured tree, rails, and timeline unchanged. */
+.lancer-process[data-relay-tree="true"] .lgd {
+  display: none;
+}
+.lancer-process[data-relay-tree="true"] .lhc .n {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.lancer-process[data-relay-tree="true"] .lhc .n span {
+  overflow: hidden;
+  white-space: nowrap !important;
+  text-overflow: ellipsis;
+}
+.lancer-process[data-relay-tree="true"] .lhc .a .ic {
+  display: none;
+}
+.lancer-process[data-relay-tree="true"] .fbar .r {
+  visibility: hidden;
+}
+.lancer-process[data-relay-tree="true"] .fbar:hover .r {
+  visibility: visible;
+}
+.lancer-process[data-relay-tree="true"] .process-tree-space .nl {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.lancer-process[data-relay-tree="true"] .process-tree-space .nl small {
+  display: none;
+}
+
+.lancer-process[data-relay-tree="true"] .process-stage__head .mt {
+  flex-shrink: 0;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lancer-process[data-relay-tree="true"] .process-stage[data-unverified="true"] {
+  color: var(--tx3);
+}
+.lancer-process[data-relay-tree="true"] .process-stage[data-unverified="true"] .gl {
+  color: var(--tx3);
+}

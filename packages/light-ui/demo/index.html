@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lancer Light UI · 可复用的执行光线</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="../src/running-border.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./index.html">Lancer <span>Light UI</span></a>
+      <nav aria-label="模型来源">
+        <button data-model="gpt" aria-pressed="true">◎ GPT</button
+        ><button data-model="claude" aria-pressed="false">✳ Claude</button
+        ><button data-model="gemini" aria-pressed="false">✦ Gemini</button>
+      </nav>
+      <a class="source" href="../README.md">接入说明 ↗</a>
+    </header>
+    <div class="workspace">
+      <aside>
+        <p class="eyebrow">交互示例</p>
+        <h1>让过程<br />有迹可循。</h1>
+        <p class="intro">消息连接到节点，<br />分支汇合成一次交付。</p>
+        <div class="scenarios" role="group" aria-label="演示场景">
+          <button data-scenario="single" aria-pressed="false">01 <span>单线推进</span></button
+          ><button data-scenario="fork" aria-pressed="true">02 <span>分叉与合并</span></button
+          ><button data-scenario="parallel" aria-pressed="false">03 <span>多会话并行</span></button>
+        </div>
+        <div class="aside-bottom">
+          <span class="small-dot"></span> 纯前端演示事件
+          <p>无需 API Key · 无运行时依赖</p>
+        </div>
+      </aside>
+      <main>
+        <div class="section-top">
+          <div>
+            <span class="eyebrow">当前会话</span>
+            <h2 id="scenario-title">分叉与合并</h2>
+          </div>
+          <span id="status" role="status" aria-live="polite">准备就绪</span>
+        </div>
+        <div id="messages" role="log" aria-label="演示会话">
+          <div class="welcome">
+            <span>↗</span>
+            <h3>从一个问题开始</h3>
+            <p>点「开始演示」，观察消息与模型的光线<br />怎样落到同色节点，并汇入交付。</p>
+          </div>
+        </div>
+        <footer>
+          <div class="toolbar">
+            <button id="run" class="primary">开始演示 →</button
+            ><button id="pause" disabled>暂停动效</button
+            ><label
+              >速度
+              <select id="speed">
+                <option value="1">1×</option>
+                <option value="2">2×</option>
+              </select></label
+            ><button id="reset">重置</button>
+          </div>
+          <p>光线慢起慢落；滚动、隐藏页面或暂停时保持节点对应关系。</p>
+        </footer>
+      </main>
+      <section class="tree-panel" aria-label="会话工作树">
+        <div class="section-top">
+          <div>
+            <span class="eyebrow">GitTree</span>
+            <h2>会话工作树</h2>
+          </div>
+          <span id="counts">0 个节点</span>
+        </div>
+        <div class="tree-tools">
+          <button id="focus" aria-pressed="false">聚焦当前</button
+          ><button id="all" aria-pressed="true">全部会话</button
+          ><span id="graph-status">等待开始</span>
+        </div>
+        <div id="tree-scroll" tabindex="0" aria-label="可横向和纵向滚动的工作树">
+          <div id="tree"><svg id="edges" aria-hidden="true"></svg></div>
+        </div>
+        <div class="legend">
+          <span>○ 进行</span><span>● 完成</span><span>◇ 交付</span><span>⑂ 分支 → 合并</span>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

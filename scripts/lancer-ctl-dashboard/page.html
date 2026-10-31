@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lancer · Live lanes</title>
+    <link rel="stylesheet" href="dashboard.css" />
+    <script src="dashboard.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Lancer <span>Live lanes</span></h1>
+        <p>本机只读面板 · 与桌面共享会话 · 每秒刷新</p>
+      </div>
+      <div id="connection" role="status">连接中…</div>
+    </header>
+    <p id="list-error" class="error" role="alert" hidden></p>
+    <section id="counts" aria-label="会话统计"></section>
+    <main>
+      <section class="sessions" aria-label="全部会话">
+        <div class="filters">
+          <input
+            id="search"
+            type="search"
+            placeholder="搜索标题、模型、目录或分区"
+            aria-label="搜索会话"
+          />
+          <select id="filter" aria-label="状态筛选">
+            <option value="all">全部状态</option>
+            <option value="running">Running</option>
+            <option value="idle">Idle</option>
+            <option value="waiting">Waiting / queued</option>
+            <option value="failed">Failed</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+        <div id="session-list"></div>
+        <p id="empty" hidden>没有匹配的会话</p>
+      </section>
+      <section class="detail" aria-label="选中会话活动">
+        <div class="detail-heading">
+          <div>
+            <h2 id="detail-title">选择一条车道</h2>
+            <p id="detail-meta"></p>
+          </div>
+          <span id="tail-updated"></span>
+        </div>
+        <p id="tail-error" class="error" role="alert" hidden></p>
+        <div id="assistant-section" hidden>
+          <h3>Assistant 摘要 <small>最近回复 · 最多末尾 12,000 字符</small></h3>
+          <pre id="assistant"></pre>
+        </div>
+        <div class="activity-heading">
+          <h3>近期活动 <small>最近 40 项 · 每项最多末尾 4,000 字符</small></h3>
+          <button id="latest" type="button">回到最新 ↓</button>
+        </div>
+        <div id="activity" tabindex="0" aria-label="近期工具调用与消息">
+          <p>选择会话后显示工具调用和助手活动。</p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      仅观察 Lancer
+      会话，不是系统进程管理器。不发送、不停止、不删除会话。关闭终端中的面板进程即可停止服务。
+    </footer>
+  </body>
+</html>

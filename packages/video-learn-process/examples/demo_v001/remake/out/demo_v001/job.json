@@ -1,0 +1,29 @@
+{
+  "schema_version": "remake_job.v1",
+  "video_id": "demo_v001",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "learning_spec_path": "learning/demo_v001/spec.json",
+  "status_code": "remake.skipped_by_policy",
+  "allowed_use_check": {
+    "passed": true,
+    "shots_checked": 2,
+    "denied_shot_ids": []
+  },
+  "out_path": null,
+  "out_sha256": null,
+  "out_duration_ms": null,
+  "duration_abs_err_ms": null,
+  "duration_rel_err": null,
+  "keyframe_checks": [],
+  "generation_pipeline": {
+    "status": "skipped_by_policy",
+    "phase": "watch_only",
+    "primary": null,
+    "generative_model": "deferred",
+    "demo_recorder": "off_by_default",
+    "notes_code": "NO_VIDEO_REQUIRED"
+  },
+  "created_at": "2026-10-26T10:06:00+08:00",
+  "remaker": "none",
+  "error_code": null
+}

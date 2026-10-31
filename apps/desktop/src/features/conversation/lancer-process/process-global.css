@@ -1,0 +1,14 @@
+/* Only global flow. Chat expansion/sidebar/blank styles are owned by r9-polish. */
+@scope (:root:not(.dark) .lancer-process) {
+  .process-conversation-items.process-conversation-items--global > [data-message-id] {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .process-conversation-items--global .eh {
+    min-height: 29px;
+  }
+  .process-conversation-items--global .process-stage {
+    display: contents;
+  }
+}

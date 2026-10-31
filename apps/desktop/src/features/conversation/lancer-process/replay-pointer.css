@@ -1,0 +1,9 @@
+/* Only the read-only reference replay carries a recorded pointer. */
+.process-replay-pointer {
+  position: fixed;
+  width: 18px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 70;
+  filter: drop-shadow(1px 2px 2px #11182755);
+}

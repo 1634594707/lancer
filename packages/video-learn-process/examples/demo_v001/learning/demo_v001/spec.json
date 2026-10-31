@@ -1,0 +1,51 @@
+{
+  "schema_version": "learning_spec.v1",
+  "video_id": "demo_v001",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "source_path": "raw/videos/demo_v001/source.mp4",
+  "status_code": "watch.ok",
+  "duration_ms": 15000,
+  "fps": 30,
+  "frame_count": 450,
+  "shots": [
+    {
+      "shot_id": "s01",
+      "t_start_ms": 0,
+      "t_end_ms": 3000,
+      "frame_start": 0,
+      "frame_end": 89,
+      "camera": "static",
+      "on_screen_text": ["开场标题"],
+      "audio_cue": "bgm",
+      "allowed_use": ["learn_only", "remake"]
+    },
+    {
+      "shot_id": "s02",
+      "t_start_ms": 3000,
+      "t_end_ms": 15000,
+      "frame_start": 90,
+      "frame_end": 449,
+      "camera": "cut",
+      "on_screen_text": [],
+      "audio_cue": "voice+bgm",
+      "allowed_use": ["learn_only", "remake"]
+    }
+  ],
+  "must_keep": ["beat_at_3s", "endcard_last_30f"],
+  "must_not_copy": ["face_identity", "brand_logo"],
+  "key_frames": [
+    { "frame_index": 0, "role": "open", "t_ms": 0 },
+    { "frame_index": 90, "role": "beat", "t_ms": 3000 },
+    { "frame_index": 449, "role": "close", "t_ms": 14966 }
+  ],
+  "acceptance": [
+    { "metric": "source_sha256_match", "op": "true", "value": true, "unit": "bool" },
+    { "metric": "schema_valid", "op": "true", "value": true, "unit": "bool" },
+    { "metric": "duration_ms_abs_err", "op": "<=", "value": 200, "unit": "ms" },
+    { "metric": "keyframe_hash_match_ratio", "op": ">=", "value": 0.66, "unit": "ratio" },
+    { "metric": "allowed_use_present", "op": "true", "value": true, "unit": "bool" }
+  ],
+  "learned_at": "2026-10-26T10:05:00+08:00",
+  "learner": "grok",
+  "error_code": null
+}

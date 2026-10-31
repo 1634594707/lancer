@@ -1,0 +1,48 @@
+.branch-return-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.branch-return-card header {
+  display: grid;
+  gap: 4px;
+}
+.branch-return-card p {
+  margin: 12px 0;
+}
+.branch-return-card details {
+  margin-top: 8px;
+}
+.branch-return-card summary {
+  width: fit-content;
+  padding: 4px 0;
+  cursor: pointer;
+  font-size: 12px;
+}
+.branch-return-card summary:focus-visible {
+  outline: 2px solid #3769cc;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.branch-return-card__files p {
+  margin: 6px 0;
+}
+.branch-return-card__files {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.queued-branch-return {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.queued-branch-return > summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.queued-branch-return > summary:focus-visible {
+  outline: 2px solid #3769cc;
+  outline-offset: 2px;
+}

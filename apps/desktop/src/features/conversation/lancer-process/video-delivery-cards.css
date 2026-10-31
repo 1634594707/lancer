@@ -1,0 +1,39 @@
+.video-delivery-cards {
+  display: grid;
+  gap: 10px;
+  margin-block: 12px;
+  min-width: 0;
+}
+.video-delivery-cards article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.video-delivery-cards article > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.video-delivery-cards span {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.video-delivery-cards details {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.video-delivery-cards summary {
+  width: fit-content;
+  cursor: pointer;
+}
+.video-delivery-cards details p {
+  margin-top: 8px;
+}

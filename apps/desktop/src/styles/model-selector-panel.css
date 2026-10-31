@@ -1,0 +1,178 @@
+/* =============================================================================
+ * Model selector — composer-footer trigger + dropdown.
+ * Extracted from main.css. The trigger is promoted from bare gray text to a
+ * discrete pill control so the active model/thinking level reads as a real
+ * affordance (Codex parity).
+ * ========================================================================== */
+
+.model-selector {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  position: relative;
+  max-width: 100%;
+}
+
+.model-selector__anchor {
+  anchor-name: var(--model-menu-anchor);
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.model-selector__badge {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  overflow-wrap: anywhere;
+  text-align: left;
+  color: var(--muted-strong);
+  font-size: 12px;
+  font-weight: var(--font-medium);
+  letter-spacing: -0.01em;
+  transition:
+    background var(--motion-base) var(--ease-out),
+    border-color var(--motion-base) var(--ease-out),
+    color var(--motion-base) var(--ease-out);
+}
+
+.model-selector__badge:hover:not(:disabled) {
+  background: var(--overlay-hover);
+  border-color: var(--border-heavy);
+  color: var(--text-strong);
+}
+
+.model-selector__badge:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.model-selector__dropdown {
+  position: fixed;
+  position-anchor: var(--model-menu-anchor);
+  position-area: block-start span-inline-end;
+  position-try-fallbacks:
+    flip-inline,
+    flip-block,
+    flip-block flip-inline;
+  inset: auto;
+  margin: 6px 8px;
+  width: 280px;
+  min-width: 0;
+  max-width: calc(100dvw - 16px);
+  max-height: min(320px, 100% - 16px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  white-space: normal;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-menu);
+  z-index: 20;
+  padding: 4px;
+  flex-direction: column;
+}
+
+.model-selector__dropdown:popover-open {
+  display: flex;
+}
+
+.model-selector__filter {
+  padding: 4px 8px 8px;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+
+.model-selector__filter-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+
+.model-selector__filter-input:focus {
+  border-color: var(--accent);
+}
+
+.model-selector__dropdown--below {
+  position-area: block-end span-inline-end;
+}
+
+.model-selector__group-title {
+  padding: 6px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.model-selector__empty {
+  padding: 0 10px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.model-selector__item {
+  flex-shrink: 0;
+  white-space: normal;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.model-selector__item:hover:not(:disabled) {
+  background: var(--surface-muted);
+}
+
+.model-selector__item--active {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.model-selector__item-label {
+  flex: 1;
+}
+
+.model-selector__item-meta {
+  min-width: 0;
+  max-width: 72%;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Composer toolbar sizing must not constrain the expanded menu rows. */
+.model-selector .model-selector__dropdown .model-selector__item {
+  height: auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  line-height: 1.4;
+  white-space: normal;
+}

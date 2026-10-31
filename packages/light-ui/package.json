@@ -1,0 +1,39 @@
+{
+  "name": "@lancer/light-ui",
+  "version": "0.1.0",
+  "description": "Event-driven light trails and running borders, extracted from Lancer.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.19.0 <26"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "PROMPT.md",
+    "NOTICE",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./running-border.css": "./src/running-border.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsc -p tsconfig.json && node --test test/*.test.mjs",
+    "dev": "tsc -p tsconfig.json && node scripts/serve.mjs",
+    "check": "tsc -p tsconfig.json --noEmit && npm test",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

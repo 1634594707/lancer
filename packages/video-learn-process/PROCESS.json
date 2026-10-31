@@ -1,0 +1,484 @@
+{
+  "process_id": "lancer.video_learn_remake.v1",
+  "title": "国内抖音视频学习与复刻",
+  "version": "0.2.0",
+  "locale": "zh-CN",
+  "created": "2026-10-26",
+  "updated": "2026-10-26",
+  "principles": [
+    "human_gui_only",
+    "mechanical_inter_model",
+    "thin_arch_no_new_service",
+    "schema_not_prose",
+    "remake_optional_no_video_required"
+  ],
+  "scope": {
+    "in": ["douyin_link", "download", "media_probe", "visual_analysis"],
+    "optional": ["remake", "learning_handoff"],
+    "out": ["animation_research", "handoff_microservice", "memory_midware"],
+    "deferred": ["demo-recorder_demo_capture", "generative_model_remake"]
+  },
+  "defaults": {
+    "primary_endpoint": "analysis.ok",
+    "video_generation_required": false,
+    "generation_pipeline": {
+      "status": "skipped_by_policy",
+      "phase": "analysis_only",
+      "primary": null,
+      "generative_model": "deferred",
+      "demo_recorder": "off_by_default",
+      "demo_recorder_note": "若以后要演示录屏再开；默认关闭，非本进程必达",
+      "note": "主验收停在 download.ok + media.ok + analysis.ok；remake 默认跳过。",
+      "code_animation_note": "用户显式点击复刻5秒后才运行；依据已验证来源抽取6张快照，视觉模型输出受限关键帧场景；同一Canvas代码用于预览和150帧MP4导出。默认仍不自动复刻。"
+    },
+    "duration_acceptance": {
+      "applies_when": "remake_enabled",
+      "primary": {
+        "metric": "duration_ms_abs_err",
+        "op": "<=",
+        "value": 200,
+        "unit": "ms"
+      },
+      "secondary_optional": {
+        "metric": "duration_ms_rel_err",
+        "op": "<=",
+        "value": 0.02,
+        "unit": "ratio",
+        "replaces_primary": false
+      }
+    },
+    "runtime_root": {
+      "kind": "per_lancer_project",
+      "mount": ["inbox/", "raw/", "learning/", "remake/", "_gates/"],
+      "template_only": "tree/",
+      "note": "每个 Lancer 项目根下挂上述目录；本约定仓 tree/ 仅为骨架模板。"
+    }
+  },
+  "workspace_root_relative": "<lancer_project_root>",
+  "path_contract": {
+    "inbox_links": "inbox/links/<video_id>.url.json",
+    "raw_video": "raw/videos/<video_id>/source.<ext>",
+    "manifest": "raw/videos/<video_id>/meta.json",
+    "learning_spec": "learning/<video_id>/spec.json",
+    "remake_job": "remake/out/<video_id>/job.json",
+    "remake_out": "remake/out/<video_id>/out.<ext>",
+    "gate": "_gates/<step>.<video_id>.json",
+    "frames": "learning/<video_id>/frames.json",
+    "frames_current": "learning/frames.json",
+    "media": "raw/videos/<video_id>/media.json",
+    "analysis_receipt": "learning/<video_id>/analysis-receipt.json",
+    "learning_handoff": "learning/<video_id>/handoff.json",
+    "learning_lessons": "learning/<video_id>/lessons.json",
+    "code_animation": "remake/out/<video_id>/<run_id>/scene.js",
+    "code_animation_state": "remake/out/<video_id>/current.json",
+    "code_animation_export": "remake/out/<video_id>/<run_id>/export-<id>/animation.mp4"
+  },
+  "status_codes": {
+    "PENDING_DOWNLOAD": {
+      "step": "ingest",
+      "ok_to_proceed": false
+    },
+    "download.ok": {
+      "step": "download",
+      "ok_to_proceed": true,
+      "requires": ["sha256_match"]
+    },
+    "download.fail": {
+      "step": "download",
+      "ok_to_proceed": false
+    },
+    "download.hash_mismatch": {
+      "step": "download",
+      "ok_to_proceed": false
+    },
+    "READY_HASH_OK": {
+      "step": "gate",
+      "alias_of": "download.ok",
+      "ok_to_proceed": true
+    },
+    "LEARNED": {
+      "step": "gate",
+      "alias_of": "analysis.ok",
+      "ok_to_proceed": true,
+      "process_success": true
+    },
+    "remake.skipped_by_policy": {
+      "step": "remake",
+      "ok_to_proceed": true,
+      "optional": true,
+      "counts_as_failure": false
+    },
+    "REMAKE_SKIPPED": {
+      "step": "gate",
+      "alias_of": "remake.skipped_by_policy",
+      "ok_to_proceed": true,
+      "counts_as_failure": false
+    },
+    "remake.ok": {
+      "step": "remake",
+      "ok_to_proceed": true,
+      "optional": true
+    },
+    "remake.fail": {
+      "step": "remake",
+      "ok_to_proceed": false,
+      "optional": true,
+      "note": "仅当显式开启 remake 后失败才计"
+    },
+    "remake.denied_allowed_use": {
+      "step": "remake",
+      "ok_to_proceed": false,
+      "optional": true
+    },
+    "remake.blocked_upstream": {
+      "step": "remake",
+      "ok_to_proceed": false,
+      "optional": true
+    },
+    "REMAKE_OK": {
+      "step": "gate",
+      "alias_of": "remake.ok",
+      "ok_to_proceed": true,
+      "optional": true
+    },
+    "FAILED_PROSE_HANDOFF": {
+      "step": "any",
+      "ok_to_proceed": false,
+      "reason": "prose_instruction_forbidden"
+    },
+    "FAILED_MISSING_FIELD": {
+      "step": "any",
+      "ok_to_proceed": false
+    },
+    "FAILED_SCHEMA": {
+      "step": "any",
+      "ok_to_proceed": false
+    },
+    "media.ok": {
+      "step": "media",
+      "ok_to_proceed": true,
+      "requires": [
+        "download.ok",
+        "source_sha256_match",
+        "valid_video_stream",
+        "real_positive_probe_values",
+        "frame_files_sha256_match"
+      ]
+    },
+    "analysis.ok": {
+      "step": "analysis",
+      "ok_to_proceed": true,
+      "primary_endpoint": true,
+      "requires": [
+        "download.ok",
+        "media.ok",
+        "vision_model_response",
+        "learning_spec_schema_valid",
+        "frame_refs_resolve"
+      ]
+    },
+    "watch.ok": {
+      "step": "legacy",
+      "ok_to_proceed": false,
+      "reason": "legacy_status_not_accepted"
+    },
+    "media.fail": {
+      "step": "media",
+      "ok_to_proceed": false
+    },
+    "analysis.fail": {
+      "step": "analysis",
+      "ok_to_proceed": false
+    },
+    "handoff.ok": {
+      "step": "handoff",
+      "ok_to_proceed": true,
+      "requires": [
+        "analysis.ok",
+        "learning_spec_sha256_match",
+        "second_model_response",
+        "lesson_refs_resolve",
+        "lesson_file_sha256_match"
+      ]
+    },
+    "handoff.fail": {
+      "step": "handoff",
+      "ok_to_proceed": false
+    }
+  },
+  "hard_edges": [
+    {
+      "from": "download.ok",
+      "to": "media",
+      "predicate": "source_exists && sha256(source) == manifest.sha256",
+      "required": true
+    },
+    {
+      "from": "media.ok",
+      "to": "analysis",
+      "predicate": "real_probe_valid && all_frame_files_hash_verified && source_unchanged",
+      "required": true
+    }
+  ],
+  "optional_edges": [
+    {
+      "from": "analysis.ok",
+      "to": "remake",
+      "predicate": "remake_explicitly_enabled && learning_spec.schema_valid && allowed_use includes remake",
+      "required": false,
+      "default": "skip"
+    },
+    {
+      "from": "analysis.ok",
+      "to": "handoff",
+      "predicate": "verified_spec_sha256 && verified_frame_references && distinct_configured_model",
+      "required": false,
+      "default": "enabled_for_received_video"
+    }
+  ],
+  "steps": [
+    {
+      "id": "ingest",
+      "optional": false,
+      "actor": "human_or_gui",
+      "inputs": [],
+      "outputs": [
+        {
+          "path": "inbox/links/<video_id>.url.json",
+          "schema": null
+        }
+      ],
+      "writes_gate": null,
+      "rules": [
+        "file_fields: video_id, douyin_url, created_at",
+        "no_prose_instruction_to_next_agent"
+      ]
+    },
+    {
+      "id": "download",
+      "optional": false,
+      "actor": "configured_downloader",
+      "inputs": [
+        {
+          "path": "inbox/links/<video_id>.url.json"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "raw/videos/<video_id>/source.<ext>",
+          "kind": "bytes"
+        },
+        {
+          "path": "raw/videos/<video_id>/meta.json",
+          "schema": "schemas/manifest.schema.json"
+        }
+      ],
+      "writes_gate": "_gates/download.<video_id>.json",
+      "success_status": "download.ok",
+      "fail_statuses": [
+        "download.fail",
+        "download.hash_mismatch",
+        "FAILED_MISSING_FIELD",
+        "FAILED_SCHEMA"
+      ],
+      "rules": [
+        "download.ok means only file identity verified; no media or analysis success implied",
+        "handoff is schema + path + sha256",
+        "next step blocked until source hash verified"
+      ]
+    },
+    {
+      "id": "media",
+      "optional": false,
+      "actor": "local_media_tools",
+      "inputs": [
+        {
+          "gate": "_gates/download.<video_id>.json",
+          "require_status": "download.ok"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "learning/<video_id>/frames.json",
+          "schema": "schemas/frames.schema.json"
+        },
+        {
+          "path": "raw/videos/<video_id>/media.json",
+          "schema": "schemas/media.schema.json"
+        }
+      ],
+      "writes_gate": "_gates/media.<video_id>.json",
+      "success_status": "media.ok",
+      "fail_statuses": ["media.fail"],
+      "rules": [
+        "probe actual video; never synthesize duration/fps/frame_count",
+        "extract frames with real frame_index and pts_ms",
+        "verify each frame path and sha256",
+        "all prerequisites must hold before analysis starts"
+      ]
+    },
+    {
+      "id": "analysis",
+      "optional": false,
+      "primary_endpoint": true,
+      "actor": "configured_vision_model",
+      "inputs": [
+        {
+          "gate": "_gates/media.<video_id>.json",
+          "require_status": "media.ok"
+        },
+        {
+          "path": "learning/<video_id>/frames.json",
+          "schema": "schemas/frames.schema.json"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "learning/<video_id>/spec.json",
+          "schema": "schemas/learning_spec.schema.json"
+        },
+        {
+          "path": "learning/<video_id>/analysis-receipt.json",
+          "schema": "schemas/analysis_receipt.schema.json"
+        }
+      ],
+      "writes_gate": "_gates/analysis.<video_id>.json",
+      "success_status": "analysis.ok",
+      "fail_statuses": ["analysis.fail"],
+      "rules": [
+        "send verified image frames to real vision model",
+        "validate structured response and all references against supplied frames",
+        "model/provider provenance required",
+        "mechanical metadata is not visual analysis",
+        "legacy watch.ok is never sufficient",
+        "receipt records submitted frame identities, provider/model, response id, request id if available, and finish_reason stop",
+        "analysis gate binds spec and receipt file hashes"
+      ]
+    },
+    {
+      "id": "remake",
+      "optional": true,
+      "default": "skip",
+      "actor": "codex",
+      "inputs": [
+        {
+          "path": "learning/<video_id>/spec.json",
+          "schema": "schemas/learning_spec.schema.json"
+        },
+        {
+          "path": "raw/videos/<video_id>/source.<ext>",
+          "kind": "bytes",
+          "access": "frame_index"
+        },
+        {
+          "gate": "_gates/analysis.<video_id>.json",
+          "require_status": "analysis.ok"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "remake/out/<video_id>/job.json",
+          "schema": "schemas/remake_job.schema.json"
+        },
+        {
+          "path": "remake/out/<video_id>/out.<ext>",
+          "kind": "bytes",
+          "when": "remake_enabled"
+        }
+      ],
+      "writes_gate": "_gates/remake.<video_id>.json",
+      "success_status": "remake.ok",
+      "skip_status": "remake.skipped_by_policy",
+      "fail_statuses": [
+        "remake.fail",
+        "remake.denied_allowed_use",
+        "remake.blocked_upstream",
+        "FAILED_SCHEMA"
+      ],
+      "rules": [
+        "default: write gate remake.skipped_by_policy; counts_as_failure=false",
+        "only run if remake_explicitly_enabled",
+        "if enabled: refuse if analysis gate != analysis.ok",
+        "if enabled: refuse if any required clip missing allowed_use OR allowed_use excludes remake",
+        "generation_pipeline.status=skipped_by_policy unless explicitly enabled",
+        "demo-recorder off_by_default; 若以后要演示录屏再开",
+        "skipping remake MUST NOT fail the process"
+      ],
+      "deferred": ["demo_recorder_binding", "generative_model_remake_detail"]
+    }
+  ],
+  "gate_file_schema": {
+    "type": "object",
+    "required": ["process_id", "video_id", "step", "status_code", "ts", "artifacts"],
+    "properties": {
+      "process_id": {
+        "const": "lancer.video_learn_remake.v1"
+      },
+      "video_id": {
+        "type": "string"
+      },
+      "step": {
+        "enum": ["download", "media", "analysis", "remake", "handoff"]
+      },
+      "status_code": {
+        "type": "string"
+      },
+      "ts": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "artifacts": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "sha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "error_code": {
+        "type": ["string", "null"]
+      },
+      "learning_spec_sha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "receipt_sha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  },
+  "forbidden": [
+    "prose_handoff_messages",
+    "please_continue_learning",
+    "new_handoff_service",
+    "new_memory_midware",
+    "generic_prompt_compression_as_handoff",
+    "start_remake_before_hash_ok",
+    "require_video_generation_for_process_success",
+    "treat_remake_skip_as_failure",
+    "run_demo_recorder_by_default",
+    "success_from_probe_defaults",
+    "analysis_before_media_ok",
+    "watch_ok_as_success",
+    "model_claim_without_frame_evidence"
+  ],
+  "current_scope": ["download", "media", "analysis"],
+  "scripts": {
+    "download_gate": "scripts/download_gate.sh",
+    "watch_gate": "scripts/watch_gate.mjs",
+    "validate_learning_spec": "scripts/validate_learning_spec.mjs",
+    "accept_download_watch": "scripts/accept_download_watch.mjs"
+  },
+  "error_codes": {
+    "E_NOT_VIDEO": "原文件没有有效视频流",
+    "E_PROBE_MISSING": "探测或抽帧工具缺失",
+    "E_PROBE_FAIL": "探测或抽帧失败，禁止默认参数",
+    "E_TIMEOUT": "操作超过截止时间",
+    "E_MODEL_FAIL": "视觉模型调用失败或响应格式无效",
+    "E_MODEL_BAD_REF": "模型引用不在已验证帧集合或时码不符",
+    "E_INTERRUPTED": "上次运行已中断，未认定为完成"
+  }
+}

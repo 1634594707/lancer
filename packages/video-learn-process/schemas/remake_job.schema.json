@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lancer.video_learn_remake.remake_job.v1",
+  "title": "RemakeJob",
+  "description": "可选复刻任务。默认 skipped_by_policy：可以不生成视频；主验收不依赖本文件。仅当显式开启 remake 时才写入非 skip 状态。demo-recorder 默认关闭（若以后要演示录屏再开）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "video_id",
+    "source_sha256",
+    "learning_spec_path",
+    "status_code",
+    "allowed_use_check",
+    "generation_pipeline",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "remake_job.v1" },
+    "video_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_\\-]+$"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "learning_spec_path": {
+      "type": "string",
+      "pattern": "^learning/.+/spec\\.json$"
+    },
+    "status_code": {
+      "type": "string",
+      "enum": [
+        "remake.skipped_by_policy",
+        "remake.ok",
+        "remake.fail",
+        "remake.denied_allowed_use",
+        "remake.blocked_upstream"
+      ]
+    },
+    "allowed_use_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "shots_checked", "denied_shot_ids"],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "shots_checked": { "type": "integer", "minimum": 0 },
+        "denied_shot_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "out_path": {
+      "type": ["string", "null"],
+      "description": "skip 时为 null；成功时为 remake/out/..."
+    },
+    "out_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "out_duration_ms": { "type": ["integer", "null"], "minimum": 1 },
+    "duration_abs_err_ms": { "type": ["integer", "null"], "minimum": 0 },
+    "duration_rel_err": { "type": ["number", "null"], "minimum": 0 },
+    "keyframe_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frame_index", "result"],
+        "properties": {
+          "frame_index": { "type": "integer", "minimum": 0 },
+          "ref_frame_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "out_frame_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "result": { "type": "string", "enum": ["match", "mismatch", "skipped"] }
+        }
+      }
+    },
+    "generation_pipeline": {
+      "type": "object",
+      "description": "默认 skipped_by_policy。不假装生成细流已定终态。",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["skipped_by_policy", "partial", "enabled"],
+          "description": "缺省 skipped_by_policy"
+        },
+        "phase": {
+          "type": "string",
+          "enum": ["watch_only", "demo_recorder_first", "generative"],
+          "default": "watch_only"
+        },
+        "primary": {
+          "type": ["string", "null"],
+          "description": "skip 时 null；若以后开启可为 demo-recorder 等"
+        },
+        "generative_model": {
+          "type": "string",
+          "enum": ["deferred", "off", "enabled"],
+          "default": "deferred"
+        },
+        "demo_recorder": {
+          "type": "string",
+          "enum": ["off_by_default", "enabled"],
+          "default": "off_by_default",
+          "description": "若以后要演示录屏再开；默认关闭"
+        },
+        "notes_code": {
+          "type": "string",
+          "maxLength": 64
+        }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "remaker": {
+      "type": "string",
+      "enum": ["codex", "none", "other"],
+      "default": "none"
+    },
+    "error_code": { "type": ["string", "null"] }
+  }
+}

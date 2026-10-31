@@ -1,0 +1,13 @@
+{
+  "process_id": "lancer.video_learn_remake.v1",
+  "video_id": "demo_v001",
+  "step": "download",
+  "status_code": "download.ok",
+  "ts": "2026-10-26T10:01:01+08:00",
+  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifacts": {
+    "manifest": "raw/videos/demo_v001/meta.json",
+    "source": "raw/videos/demo_v001/source.mp4"
+  },
+  "error_code": null
+}

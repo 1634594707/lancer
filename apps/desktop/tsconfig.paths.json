@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@lancer/pi-sdk-driver": ["../../packages/pi-sdk-driver/src/index.ts"],
+      "@lancer/pi-sdk-driver/custom-provider-types": [
+        "../../packages/pi-sdk-driver/src/custom-provider-types.ts"
+      ],
+      "@lancer/pi-sdk-driver/dev-reload-probe": [
+        "../../packages/pi-sdk-driver/src/dev-reload-probe.ts"
+      ],
+      "@lancer/catalogs": ["../../packages/catalogs/src/index.ts"],
+      "@lancer/catalogs/dev-reload-probe": ["../../packages/catalogs/src/dev-reload-probe.ts"],
+      "@lancer/session-driver": ["../../packages/session-driver/src/index.ts"],
+      "@lancer/session-driver/runtime-types": [
+        "../../packages/session-driver/src/runtime-types.ts"
+      ],
+      "@lancer/session-driver/dev-reload-probe": [
+        "../../packages/session-driver/src/dev-reload-probe.ts"
+      ],
+      "@lancer/catalogs/node": ["../../packages/catalogs/src/node/index.ts"],
+      "@lancer/catalogs/node/atomic-write": ["../../packages/catalogs/src/node/atomic-write.ts"],
+      "@lancer/light-ui": ["../../packages/light-ui/src/index.ts"]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@lancer/video-learn-process",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Verified download, media probe and visual analysis file contract",
+  "scripts": {
+    "typecheck": "node --check scripts/watch_gate.mjs && node --check scripts/accept_download_watch.mjs && node --check scripts/validate_learning_spec.mjs && node --check scripts/lib/project.mjs && node --check scripts/lib/schema_check.mjs && node --check scripts/lib/verify_analysis.mjs"
+  }
+}

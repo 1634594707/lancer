@@ -1,0 +1,26 @@
+export const lancerMessages = {
+  en: {
+    "lancer.sidebar.search": "Search threads",
+    "lancer.sidebar.utilities": "Navigation & workspace tools",
+    "lancer.zone.sessionCountOne": "{count} session",
+    "lancer.zone.sessionCountMany": "{count} sessions",
+    "lancer.modelReel.hint": "Models",
+    "lancer.trajectory.legendTitle": "Legend · events",
+    "lancer.chat.launch": "Launch",
+    "lancer.chat.continue": "Continue",
+    "lancer.handoff.title": "Handoff",
+    "lancer.assistant.laneModel": "{zone} · {model}",
+  },
+  zh: {
+    "lancer.sidebar.search": "搜索会话",
+    "lancer.sidebar.utilities": "导航与工作区工具",
+    "lancer.zone.sessionCountOne": "{count} 个会话",
+    "lancer.zone.sessionCountMany": "{count} 个会话",
+    "lancer.modelReel.hint": "模型",
+    "lancer.trajectory.legendTitle": "图例 · 轨迹事件",
+    "lancer.chat.launch": "立即发射",
+    "lancer.chat.continue": "继续",
+    "lancer.handoff.title": "Handoff",
+    "lancer.assistant.laneModel": "{zone} · {model}",
+  },
+} as const;

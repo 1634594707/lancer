@@ -1,0 +1,267 @@
+/* Keep readable panes; narrow windows scroll rather than crushing the conversation. */
+@scope (.lancer-process) {
+  .body.ml {
+    grid-template-columns: auto minmax(320px, 1fr) clamp(280px, 31.4vw, 452px);
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .shell-sidebar {
+    position: relative;
+    width: var(--lancer-sidebar-width, var(--lancer-sidebar-default, 288px));
+    background: var(--bg2);
+    padding: 12px;
+    color: var(--tx);
+  }
+  .shell-sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .shell-sidebar__brand i {
+    width: 20px;
+    height: 20px;
+    background: var(--tx);
+    border-radius: 6px;
+  }
+  .shell-sidebar__label {
+    padding: 10px 8px 6px;
+    font-size: 12px;
+    color: #8a8a8a;
+  }
+  .shell-sidebar__modules {
+    display: grid;
+    gap: 2px;
+  }
+  .shell-sidebar__modules button {
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 14px;
+    min-height: 38px;
+  }
+  .shell-sidebar__modules button > svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .shell-sidebar__modules small {
+    margin-left: auto;
+    color: #8a8a8a;
+    font-size: 12px;
+  }
+  .shell-sidebar__modules button:hover,
+  .shell-sidebar .ssr:hover {
+    background: var(--bg3);
+  }
+  .shell-sidebar__modules button[aria-pressed="true"],
+  .shell-sidebar .ssr.on {
+    background: var(--bg);
+    box-shadow:
+      inset 0 0 0 0.5px #00000024,
+      0 1px 2px #0000000a;
+  }
+  .shell-sidebar__residents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 6px 4px;
+  }
+  /* Scoped `button` padding (0 10px) otherwise makes this 48px border-box
+     content area 27×47, and object-fit:cover paints a flat ellipse. */
+  .shell-sidebar__residents .shell-sidebar__pin {
+    position: relative;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 48px;
+    height: 48px;
+    aspect-ratio: 1;
+    flex: none;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg);
+    border: 0.5px solid #00000024;
+    border-radius: 50%;
+  }
+  .shell-sidebar__residents button.shell-sidebar__pin[aria-pressed="true"] {
+    border-color: var(--tx);
+    outline: 3px solid var(--tx);
+    outline-offset: 0;
+  }
+  .shell-sidebar__residents i {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    z-index: 1;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+    background: var(--tx);
+  }
+  .shell-sidebar__residents i[data-status="failed"] {
+    background: #ef4444;
+  }
+  .shell-sidebar__residents i[data-status="waiting"] {
+    border: 1px dashed var(--tx);
+    background: var(--bg);
+  }
+  .shell-assistant-avatar {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .shell-sidebar__residents .shell-assistant-avatar {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    object-fit: cover;
+  }
+  .am .who .shell-assistant-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  .shell-sidebar .sh {
+    padding: 12px 0 0;
+  }
+  .shell-sidebar .search {
+    min-width: 0;
+    border-radius: 10px;
+  }
+  .shell-sidebar .search svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+  }
+  .shell-sidebar .search input {
+    min-width: 0;
+  }
+  .shell-sidebar .process-new-thread svg {
+    width: 16px;
+    height: 16px;
+  }
+  .shell-sidebar .lst {
+    overflow: auto;
+  }
+  .shell-sidebar .sz {
+    padding: 0;
+  }
+  .shell-sidebar .sz[hidden] {
+    display: none;
+  }
+  .shell-sidebar .ssr {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    padding: 8px;
+    border: 0;
+    border-radius: 12px;
+    text-align: left;
+  }
+  .shell-sidebar .ssr .shell-assistant-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .shell-sidebar__session {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  .shell-sidebar .ssr .t {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .shell-sidebar__preview {
+    font-size: 12px;
+    color: #8a8a8a;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .shell-sidebar__delivery {
+    margin-bottom: 4px;
+    border-radius: 12px;
+    background: var(--bg);
+  }
+  .shell-sidebar__delivery summary {
+    cursor: pointer;
+    padding: 10px 12px;
+  }
+  .shell-sidebar__delivery summary .t {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .shell-sidebar__delivery summary .shell-sidebar__preview {
+    display: block;
+    margin-top: 4px;
+  }
+  .shell-sidebar__delivery-detail {
+    padding: 0 12px 10px;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+    user-select: text;
+  }
+  .shell-sidebar__delivery-detail p {
+    margin: 6px 0;
+  }
+  .shell-sidebar__delivery-note {
+    padding: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #8a8a8a;
+  }
+  .shell-sidebar .shell-sidebar__footer {
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px 2px;
+    margin-top: 8px;
+    color: var(--tx);
+  }
+  .shell-sidebar__local {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+  .shell-sidebar__footer small {
+    display: block;
+    color: #8a8a8a;
+    margin-top: 2px;
+  }
+  .shell-sidebar__footer button {
+    margin-left: auto;
+  }
+  .shell-sidebar__footer svg {
+    width: 18px;
+    height: 18px;
+  }
+  .main .um {
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+  }
+  .main .um a,
+  .main .process-user__bubble a {
+    color: inherit;
+  }
+  .main .strip4 {
+    display: none;
+  }
+}

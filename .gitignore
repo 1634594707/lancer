@@ -1,0 +1,59 @@
+node_modules/
+*.tsbuildinfo
+.turbo/
+plans/
+dist/
+build/
+out/
+# Process-pack output slots are contract folders, not build artifacts.
+!packages/video-learn-process/**/out/
+!packages/video-learn-process/**/out/**
+release/
+release-*/
+.cache/
+# Local verification evidence, app backups, and package-manager cache.
+/.artifacts/
+/.pnpm-store/
+playwright-report/
+test-results/
+.claude/worktrees/
+.codex/worktrees/
+.DS_Store
+tmp-chat-parity.png
+tmp-latest-design.png
+tmp-sample-design.png
+
+# Vite dev build artifacts
+*.js
+*.css
+!/apps/**/*.js
+!/apps/**/*.css
+!/packages/**/*.js
+!/packages/**/*.css
+index.html
+!apps/**/index.html
+!packages/light-ui/demo/index.html
+
+# Vite hashed build output (anywhere)
+*-[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9].js
+*-[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9].css
+
+# Hand-authored assets for the zero-build local control dashboard.
+!/scripts/lancer-ctl-dashboard/dashboard.js
+!/scripts/lancer-ctl-dashboard/dashboard.css
+
+# Local verification evidence (verify-pi-gui runs, proof workspaces)
+/.artifacts/
+
+# Project-local received media and runtime evidence, never source.
+/.lancer/
+
+# Per-project video-learning runtime artifacts (the process template lives in packages/).
+/_gates/
+/inbox/
+/raw/
+/learning/
+/remake/
+
+# Reviewed public template only; actual environment files stay private.
+!/.env.example

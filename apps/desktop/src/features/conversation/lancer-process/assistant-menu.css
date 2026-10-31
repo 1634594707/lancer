@@ -1,0 +1,38 @@
+.assistant-item {
+  anchor-name: var(--assistant-menu-anchor);
+}
+.assistant-context-menu {
+  position: fixed;
+  position-anchor: var(--assistant-menu-anchor);
+  inset: auto;
+  margin: 4px 0;
+  padding: 4px;
+  min-inline-size: 132px;
+  max-inline-size: calc(100vw - 16px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--tx);
+}
+@supports (position-area: block-end) {
+  .assistant-context-menu {
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block, flip-inline;
+  }
+}
+.lancer-process .assistant-context-menu button {
+  display: flex;
+  width: 100%;
+  height: 32px;
+  padding-inline: 10px;
+  border: 0;
+  background: transparent;
+  text-align: start;
+}
+.lancer-process .assistant-context-menu button:where(:hover, :focus-visible):not(:disabled) {
+  background: var(--bg2);
+}
+.lancer-process .assistant-context-menu button:disabled {
+  color: var(--tx3);
+  cursor: default;
+}

@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a reproducible Lancer issue
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, private conversations or authenticated traces. Use private vulnerability reporting for security issues.
+  - type: input
+    id: environment
+    attributes:
+      label: Version and environment
+      description: Commit or release version, OS, CPU architecture, source or packaged app.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps, expected result and actual result
+      description: Include a minimal reproducible case. For performance issues, describe the action and number of conversations or branches.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Screenshots, short recordings or redacted error codes. Remove account names, local paths and tokens.

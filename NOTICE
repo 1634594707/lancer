@@ -1,0 +1,26 @@
+Lancer
+=======
+
+Lancer is a personal fork of pi-gui, the desktop app for the pi coding agent.
+
+  Upstream project: pi-gui
+  Upstream source:  https://github.com/minghinmatthewlam/pi-gui
+  Upstream version: v1.0.1
+  Upstream license: MIT License, Copyright (c) 2026 Matthew Lam
+
+The upstream MIT license text is kept unchanged in the LICENSE file and applies to
+Lancer's source modifications. Third-party dependencies, fonts, trademarks and
+media retain their own licenses; see docs/third-party-dependencies.md. The original
+upstream README is preserved at docs/upstream/README.md.
+
+Lancer modifications (summary):
+  - English / Simplified Chinese (zh-CN) interface with a persisted language switcher
+  - Rebranded app identity (Lancer, com.lancer.desktop) so it installs beside pi-gui
+  - Upstream auto-update check and release publishing removed
+  - Multi-model console features: Models & accounts screen, thread model switcher,
+    API-key setup for every pi provider that supports it
+  - Persistent local signing for Apple Silicon builds and Chinese documentation
+
+Lancer is not affiliated with or endorsed by the pi-gui or pi authors.
+Lancer uses the pi coding agent (@earendil-works/pi-coding-agent) at runtime and
+shares its configuration directory (~/.pi/agent) with pi and pi-gui.
