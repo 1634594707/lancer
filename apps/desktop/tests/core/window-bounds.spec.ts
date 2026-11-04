@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
 import {
@@ -47,4 +48,45 @@ test("main window reopens at its last position and size", async () => {
   } finally {
     await secondRun.close();
   }
+});
+
+test("a quit inside the save debounce still persists the last bounds", async () => {
+  test.setTimeout(90_000);
+  const userDataDir = await makeUserDataDir();
+  const agentDir = join(userDataDir, "agent");
+  await seedAgentDir(agentDir);
+  const workspacePath = await makeWorkspace("window-bounds-flush-workspace");
+
+  const run = await launchDesktop(userDataDir, {
+    agentDir,
+    initialWorkspaces: [workspacePath],
+    testMode: "background",
+  });
+  let exited = false;
+  run.electronApp.on("close", () => {
+    exited = true;
+  });
+  try {
+    await run.firstWindow();
+    await run.electronApp.evaluate(({ BrowserWindow }) => {
+      BrowserWindow.getAllWindows()[0]!.setBounds({ x: 140, y: 110, width: 1108, height: 736 });
+    });
+    // Quit well inside the 400 ms save debounce. On Windows and Linux closing
+    // the last window takes the process down, so only the close-time flush can
+    // persist these bounds — the debounced write would lose them.
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const closed = run.electronApp.waitForEvent("close");
+    await run.electronApp.evaluate(({ app }) => app.quit());
+    await closed;
+  } finally {
+    if (!exited) {
+      await run.close();
+    }
+  }
+
+  const saved = JSON.parse(await readFile(join(userDataDir, "window-bounds.json"), "utf8")) as {
+    bounds?: { width?: number; height?: number };
+  };
+  expect(saved.bounds?.width).toBe(1108);
+  expect(saved.bounds?.height).toBe(736);
 });

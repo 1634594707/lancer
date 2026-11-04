@@ -458,6 +458,17 @@ function mainWindowBoundsPersistence(): WindowBoundsPersistence {
   return windowBoundsPersistence;
 }
 
+/**
+ * Bounds are saved behind a debounce, so a close or quit must drain the pending
+ * write immediately. The close handler cannot await it; the quit handler awaits
+ * the same chain separately.
+ */
+function saveWindowBoundsNow(): void {
+  windowBoundsPersistence?.flush().catch((error: unknown) => {
+    console.warn("[main] could not save window bounds", error);
+  });
+}
+
 /** Primary display first: it is where unsaved bounds are centered. */
 function displayWorkAreas(): DisplayWorkArea[] {
   const primary = screen.getPrimaryDisplay();
@@ -554,7 +565,12 @@ function createWindow(): BrowserWindow {
     window.on("move", persistBounds);
     window.on("maximize", persistBounds);
     window.on("unmaximize", persistBounds);
-    window.on("close", persistBounds);
+    // Closing the last window exits on Windows and Linux, which can happen
+    // before the debounce timer fires: write the last drag or resize now.
+    window.on("close", () => {
+      persistBounds();
+      saveWindowBoundsNow();
+    });
   }
   window.once("ready-to-show", () => {
     if (savedBounds?.maximized) {
@@ -1445,6 +1461,9 @@ app.on("before-quit", (event) => {
   stopPruningTerminals = undefined;
   terminalService?.dispose();
   terminalService = undefined;
+  // Bounds are written on a debounce, and the close that triggered this quit
+  // already asked for one; drain it even when there is no store to flush.
+  saveWindowBoundsNow();
   if (quittingAfterStoreFlush || !store) {
     return;
   }
@@ -1455,6 +1474,7 @@ app.on("before-quit", (event) => {
     store.flushPersistence(),
     extensionViewOwner?.dispose(),
     controlServer?.setEnabled(false),
+    windowBoundsPersistence?.flush() ?? Promise.resolve(),
   ]).catch((error) => {
     console.error("[main] persistence flush failed during quit:", error);
   });

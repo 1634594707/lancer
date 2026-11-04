@@ -72,6 +72,24 @@ test("persisted state is validated before it is trusted", () => {
   expect(parseWindowBoundsState("not an object")).toBeUndefined();
 });
 
+test("a flush drains a write that another flush already started", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "lancer-window-bounds-"));
+  try {
+    // A debounce longer than the test: the bytes can only land through flush().
+    const persistence = new WindowBoundsPersistence(windowBoundsFilePath(dir), 60_000);
+    const state = { bounds: { x: 40, y: 60, width: 1010, height: 720 }, maximized: false };
+    persistence.schedule(state);
+    const startedWrite = persistence.flush();
+    // Close and quit flush one after the other; the later one has nothing
+    // pending, so it must wait for the write the earlier one already started.
+    await persistence.flush();
+    expect(persistence.read()).toEqual(state);
+    await startedWrite;
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test("bounds survive a write and read round trip", async () => {
   const dir = await mkdtemp(join(tmpdir(), "lancer-window-bounds-"));
   try {

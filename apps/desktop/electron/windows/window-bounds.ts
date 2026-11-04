@@ -145,18 +145,20 @@ export class WindowBoundsPersistence {
     }
     const state = this.pending;
     this.pending = undefined;
-    if (!state) {
-      return;
+    if (state) {
+      this.writeChain = this.writeChain
+        .then(() =>
+          writeFileAtomicQueued(this.filePath, JSON.stringify(state), (existing) =>
+            isWindowBoundsState(existing) ? existing : undefined,
+          ),
+        )
+        .catch((error: unknown) => {
+          console.warn("[window-bounds] could not save window bounds", error);
+        });
     }
-    this.writeChain = this.writeChain
-      .then(() =>
-        writeFileAtomicQueued(this.filePath, JSON.stringify(state), (existing) =>
-          isWindowBoundsState(existing) ? existing : undefined,
-        ),
-      )
-      .catch((error: unknown) => {
-        console.warn("[window-bounds] could not save window bounds", error);
-      });
+    // Await the chain even with nothing pending: a concurrent flush that took
+    // the pending state has already started the write, and callers that flush
+    // on close or quit must not return before those bytes reach the disk.
     await this.writeChain;
   }
 
