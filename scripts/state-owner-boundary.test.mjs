@@ -17,11 +17,13 @@ const reviewedStore = "apps/desktop/electron/workbench/reviewed-store.ts";
 const doubaoBindingStore = "apps/desktop/electron/doubao-app/binding-store.ts";
 const checkpointStore = "apps/desktop/electron/workbench/checkpoint-store.ts";
 const assistantStore = "apps/desktop/electron/application/lancer-assistant-store.ts";
+const windowBoundsStore = "apps/desktop/electron/windows/window-bounds.ts";
 // Durable files and the atomic writer may appear only in the modules that own them.
 const durableStateOwners = [
   { token: /assistants\.json/, name: "assistants.json", owners: [assistantStore] },
   { token: /doubao-app\.json/, name: "doubao-app.json", owners: [doubaoBindingStore] },
   { token: /reviewed-files\.json/, name: "reviewed-files.json", owners: [reviewedStore] },
+  { token: /window-bounds\.json/, name: "window-bounds.json", owners: [windowBoundsStore] },
   {
     token: /\bturn-checkpoints\b|\bcheckpoints\.json|\bobjects\.git\b/,
     name: "the checkpoint store paths",
@@ -39,6 +41,7 @@ const durableStateOwners = [
       checkpointStore,
       doubaoBindingStore,
       assistantStore,
+      windowBoundsStore,
     ],
   },
 ];
