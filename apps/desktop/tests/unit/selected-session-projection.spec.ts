@@ -89,6 +89,25 @@ test("projection copies attachments instead of sharing the mirror", () => {
   expect(projected[0]?.attachments).toEqual(message.attachments);
 });
 
+test("an unchanged mirror reuses the projected queue instead of rebuilding it", () => {
+  const mirror = [queued("followUp", "follow-1")];
+  const source: SelectedSessionQueueSources = {
+    queuedComposerMessagesBySession: new Map([[key, mirror]]),
+    queuedComposerEditsBySession: new Map(),
+  };
+
+  // Publishing runs per streamed token; the renderer must keep the same array.
+  const first = projectQueuedComposerMessages(workspaceId, sessionId, source);
+  expect(projectQueuedComposerMessages(workspaceId, sessionId, source)).toBe(first);
+
+  // A driver event replaces the mirror array; that must project from scratch.
+  const replaced: SelectedSessionQueueSources = {
+    ...source,
+    queuedComposerMessagesBySession: new Map([[key, [...mirror]]]),
+  };
+  expect(projectQueuedComposerMessages(workspaceId, sessionId, replaced)).not.toBe(first);
+});
+
 test("editing id is read from the mirror, not from the published snapshot", () => {
   expect(projectEditingQueuedMessageId(workspaceId, sessionId, sources([], "follow-1"))).toBe(
     "follow-1",

@@ -56,9 +56,7 @@ await test("editing a queued message keeps its id but refreshes the snapshot", (
   // `replaceQueuedMessages` rewrites the entry in place, so the id survives while
   // text and updatedAt change; an id-only comparison would deliver the old text.
   const record = {
-    queuedMessages: [
-      { ...queued("one"), text: "edited", updatedAt: "2026-11-02T00:00:05.000Z" },
-    ],
+    queuedMessages: [{ ...queued("one"), text: "edited", updatedAt: "2026-11-02T00:00:05.000Z" }],
   };
   const stale = sessionUpdated([queued("one")]);
 
@@ -82,6 +80,31 @@ await test("attaching an image to a queued message refreshes the snapshot", () =
   const delivered = deliverableQueue().withDeliverableQueue(record, stale);
   if (delivered.type !== "sessionUpdated") throw new Error("Expected a session update");
   assert.equal(delivered.snapshot.queuedMessages?.[0]?.attachments?.length, 1);
+});
+
+await test("attachment field order is not a change", () => {
+  // Two objects with the same fields and the same values are the same
+  // attachment even when their keys were created in a different order.
+  const record = {
+    queuedMessages: [
+      {
+        ...queued("one"),
+        attachments: [
+          { kind: "file" as const, name: "a.md", mimeType: "text/markdown", fsPath: "/tmp/a.md" },
+        ],
+      },
+    ],
+  };
+  const current = sessionUpdated([
+    {
+      ...queued("one"),
+      attachments: [
+        { fsPath: "/tmp/a.md", mimeType: "text/markdown", name: "a.md", kind: "file" as const },
+      ],
+    },
+  ]);
+
+  assert.equal(deliverableQueue().withDeliverableQueue(record, current), current);
 });
 
 await test("a message queued after the snapshot was mapped still reaches the UI", () => {

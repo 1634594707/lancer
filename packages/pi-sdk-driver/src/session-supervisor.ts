@@ -3202,8 +3202,48 @@ function sameQueuedMessages(
       message.text === other.text &&
       message.createdAt === other.createdAt &&
       message.updatedAt === other.updatedAt &&
-      JSON.stringify(message.attachments ?? []) === JSON.stringify(other.attachments ?? [])
+      sameAttachments(message.attachments, other.attachments)
     );
+  });
+}
+
+type QueuedAttachment = NonNullable<SessionQueuedMessage["attachments"]>[number];
+
+/**
+ * Attachments carry no id, so compare the fields the composer shows. Comparing
+ * serialized JSON would let a field-order difference read as a change and would
+ * re-encode an image payload on every delivery of an unchanged queue.
+ */
+function sameAttachments(
+  delivered: readonly QueuedAttachment[] | undefined,
+  current: readonly QueuedAttachment[] | undefined,
+): boolean {
+  const left = delivered ?? [];
+  const right = current ?? [];
+  if (left.length !== right.length) {
+    return false;
+  }
+  return left.every((attachment, index) => {
+    const other = right[index];
+    if (!other || other.kind !== attachment.kind) {
+      return false;
+    }
+    if (attachment.kind === "file" && other.kind === "file") {
+      return (
+        attachment.fsPath === other.fsPath &&
+        attachment.name === other.name &&
+        attachment.mimeType === other.mimeType &&
+        attachment.sizeBytes === other.sizeBytes
+      );
+    }
+    if (attachment.kind === "image" && other.kind === "image") {
+      return (
+        attachment.data === other.data &&
+        attachment.mimeType === other.mimeType &&
+        attachment.name === other.name
+      );
+    }
+    return false;
   });
 }
 

@@ -13,6 +13,17 @@ export interface SelectedSessionQueueSources {
 const NO_QUEUED_MESSAGES: readonly QueuedComposerMessage[] = [];
 
 /**
+ * Per-mirror-array projection cache. Replacing the queue replaces the array, so
+ * a cache entry can never outlive the queue it was derived from. Without it,
+ * every streamed token re-runs `filter`/`map` and clones attachments, handing
+ * the renderer a new array each time and defeating its memoization.
+ */
+const projectedQueues = new WeakMap<
+  readonly QueuedComposerMessage[],
+  Map<string, readonly QueuedComposerMessage[]>
+>();
+
+/**
  * The queue the composer shows for the selected session.
  *
  * The session mirrors, not the published snapshot, are the source of truth: they
@@ -29,21 +40,30 @@ export function projectQueuedComposerMessages(
     return NO_QUEUED_MESSAGES;
   }
 
-  const queued = sources.queuedComposerMessagesBySession.get(
-    sessionKey({ workspaceId, sessionId }),
-  );
+  const key = sessionKey({ workspaceId, sessionId });
+  const queued = sources.queuedComposerMessagesBySession.get(key);
   if (!queued || queued.length === 0) {
     return NO_QUEUED_MESSAGES;
   }
 
+  const cached = projectedQueues.get(queued)?.get(key);
+  if (cached) {
+    return cached;
+  }
+
   // Steer messages are folded into the transcript, so the composer list only
   // shows follow-ups — matching what the driver is holding for the next turn.
-  return queued
+  const projected = queued
     .filter((message) => message.mode === "followUp")
     .map((message) => ({
       ...message,
       attachments: cloneComposerAttachments(message.attachments),
     }));
+  const bySelection =
+    projectedQueues.get(queued) ?? new Map<string, readonly QueuedComposerMessage[]>();
+  bySelection.set(key, projected);
+  projectedQueues.set(queued, bySelection);
+  return projected;
 }
 
 export function projectEditingQueuedMessageId(
