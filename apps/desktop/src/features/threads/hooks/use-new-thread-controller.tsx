@@ -35,6 +35,7 @@ import type { SettingsSection } from "../../settings/settings-view";
 import { useMentionMenu } from "../../conversation/hooks/use-mention-menu";
 import { useSlashMenu } from "../../conversation/hooks/use-slash-menu";
 import { resolveRepoWorkspaceId } from "../../../../contracts/workspace-roots";
+import { shouldKeepNewThreadDraft } from "../new-thread-draft";
 
 interface UseNewThreadControllerParams {
   readonly assistantId?: string;
@@ -193,9 +194,11 @@ export function useNewThreadController(params: UseNewThreadControllerParams) {
       // Cmd/Ctrl+N is also how users return to the surface (e.g. after Settings).
       // Reopening the same workspace keeps what they already typed; a different
       // workspace starts a clean draft.
-      const nextWorkspaceId = resolveSurfaceWorkspaceId(workspaceId);
       resetSurface(workspaceId, {
-        keepDraft: Boolean(nextWorkspaceId) && nextWorkspaceId === rootWorkspaceId,
+        keepDraft: shouldKeepNewThreadDraft(
+          resolveSurfaceWorkspaceId(workspaceId),
+          rootWorkspaceId,
+        ),
       });
       openedInAppRef.current = true;
       focusComposer();
