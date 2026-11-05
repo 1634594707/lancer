@@ -2190,7 +2190,7 @@ export class SessionSupervisor {
           await this.persistSnapshot(record);
         }
         for (const event of events) {
-          await this.emit(record, event);
+          await this.emit(record, this.withDeliverableQueue(record, event));
         }
       },
       (error) => {
@@ -2202,6 +2202,42 @@ export class SessionSupervisor {
         );
       },
     );
+  }
+
+  /**
+   * Agent events are mapped when they fire but delivered later through the
+   * per-session queue, so a snapshot can predate a queue change — most visibly
+   * Stop, which clears the steer/follow-up queue and then emits its own update
+   * while an already-mapped `sessionUpdated` is still waiting to be delivered.
+   * Delivering that stale snapshot resurrects the entries the user just
+   * discarded, so the queue (which is current state, not history) is taken from
+   * the record at delivery time.
+   */
+  private withDeliverableQueue(
+    record: ManagedSessionRecord,
+    event: SessionDriverEvent,
+  ): SessionDriverEvent {
+    if (
+      event.type !== "sessionOpened" &&
+      event.type !== "sessionUpdated" &&
+      event.type !== "runCompleted"
+    ) {
+      return event;
+    }
+    const queuedMessages = record.queuedMessages.map((message) => cloneQueuedMessage(message));
+    const delivered = event.snapshot.queuedMessages ?? [];
+    if (sameQueuedMessages(delivered, queuedMessages)) {
+      return event;
+    }
+    const snapshot = { ...event.snapshot };
+    if (queuedMessages.length > 0) {
+      snapshot.queuedMessages = queuedMessages;
+    } else {
+      // `buildSnapshot` omits the key when nothing is queued; keep that shape so
+      // an emptied queue is not distinguishable from a snapshot built empty.
+      delete snapshot.queuedMessages;
+    }
+    return { ...event, snapshot };
   }
 
   private handleAgentEvent(record: ManagedSessionRecord, event: AgentSessionEvent): void {
@@ -3143,6 +3179,73 @@ const extensionUiThemeStub = new Proxy(
       },
   },
 ) as ExtensionUIContext["theme"];
+
+/**
+ * Editing a queued message keeps its id, so an id-only comparison would treat
+ * the edited entry as already delivered. Compare the fields the composer shows.
+ */
+function sameQueuedMessages(
+  delivered: readonly SessionQueuedMessage[],
+  current: readonly SessionQueuedMessage[],
+): boolean {
+  if (delivered.length !== current.length) {
+    return false;
+  }
+  return delivered.every((message, index) => {
+    const other = current[index];
+    if (!other) {
+      return false;
+    }
+    return (
+      message.id === other.id &&
+      message.mode === other.mode &&
+      message.text === other.text &&
+      message.createdAt === other.createdAt &&
+      message.updatedAt === other.updatedAt &&
+      sameAttachments(message.attachments, other.attachments)
+    );
+  });
+}
+
+type QueuedAttachment = NonNullable<SessionQueuedMessage["attachments"]>[number];
+
+/**
+ * Attachments carry no id, so compare the fields the composer shows. Comparing
+ * serialized JSON would let a field-order difference read as a change and would
+ * re-encode an image payload on every delivery of an unchanged queue.
+ */
+function sameAttachments(
+  delivered: readonly QueuedAttachment[] | undefined,
+  current: readonly QueuedAttachment[] | undefined,
+): boolean {
+  const left = delivered ?? [];
+  const right = current ?? [];
+  if (left.length !== right.length) {
+    return false;
+  }
+  return left.every((attachment, index) => {
+    const other = right[index];
+    if (!other || other.kind !== attachment.kind) {
+      return false;
+    }
+    if (attachment.kind === "file" && other.kind === "file") {
+      return (
+        attachment.fsPath === other.fsPath &&
+        attachment.name === other.name &&
+        attachment.mimeType === other.mimeType &&
+        attachment.sizeBytes === other.sizeBytes
+      );
+    }
+    if (attachment.kind === "image" && other.kind === "image") {
+      return (
+        attachment.data === other.data &&
+        attachment.mimeType === other.mimeType &&
+        attachment.name === other.name
+      );
+    }
+    return false;
+  });
+}
 
 function cloneQueuedMessage(message: SessionQueuedMessage): SessionQueuedMessage {
   return {
