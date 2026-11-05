@@ -63,7 +63,7 @@ test("workflow aggregate covers every job and cannot ignore unsuccessful checks"
   const sorted = (values) => [...values].sort();
   assert.deepEqual(
     sorted(Object.keys(workflow.jobs).filter((job) => job !== "ci-required")),
-    sorted([...requiredJobs, ...coreShardJobs]),
+    sorted([...requiredJobs, ...coreShardJobs, "desktop-core-matrix"]),
   );
   assert.deepEqual(sorted(gate.needs), sorted(requiredJobs));
   assert.equal(gate.name, "CI required");
@@ -129,15 +129,22 @@ function assertCoreShards(workflow) {
   assert.ok(check, "Core gate must validate shard results");
   assert.equal(check.env.CI_NEEDS, "${{ toJSON(needs) }}");
   assert.equal(check.if, undefined);
+  const planner = workflow.jobs["desktop-core-matrix"];
+  assert.equal(planner["runs-on"], "ubuntu-latest");
+  assert.equal(
+    planner.steps.find((step) => step.id === "plan")?.run,
+    'node .github/scripts/desktop-core-matrix.mjs >> "$GITHUB_OUTPUT"',
+  );
   const matrix = workflow.jobs["desktop-core-shards"];
   assert.equal(matrix.if, undefined);
-  assert.deepEqual(matrix.strategy.matrix, { shard: [1, 2, 3, 4] });
+  assert.equal(matrix.needs, "desktop-core-matrix");
+  assert.deepEqual(matrix.strategy.matrix, {
+    include: "${{ fromJSON(needs.desktop-core-matrix.outputs.include) }}",
+  });
   assert.equal(matrix.strategy["fail-fast"], false);
-  // PRs run Core on Linux and main pushes on macOS; each runner OS gets exactly one Core step.
-  assert.equal(
-    matrix["runs-on"],
-    "${{ github.event_name == 'pull_request' && 'ubuntu-latest' || 'macos-latest' }}",
-  );
+  // The planner emits Linux cells for pull requests and Linux plus macOS for pushes.
+  // matrix is not valid in a job-level if, so unscheduled macOS cells never start.
+  assert.equal(matrix["runs-on"], "${{ matrix.os }}");
   const mac = matrix.steps.find((step) => step.name === "Desktop Core (macOS)");
   assert.equal(mac.if, "${{ runner.os == 'macOS' }}");
   assert.equal(
@@ -151,7 +158,15 @@ function assertCoreShards(workflow) {
     /^xvfb-run .* pnpm --filter @lancer\/desktop run test:e2e:core --shard=\$\{\{ matrix\.shard \}\}\/4 --reporter=line,json$/,
   );
   const upload = matrix.steps.find((step) => isAction(step.uses, "actions/upload-artifact"));
-  assert.equal(upload.with.name, "desktop-core-test-results-${{ matrix.shard }}");
+  assert.equal(upload.with.name, "desktop-core-test-results-${{ matrix.os }}-${{ matrix.shard }}");
+  for (const [name, job] of Object.entries(workflow.jobs)) {
+    if (!job.steps?.some((step) => isAction(step.uses, "actions/checkout"))) continue;
+    const parent = job.steps.find(
+      (step) => step.run === "node .github/scripts/check-pr-merge-parent.mjs",
+    );
+    assert.ok(parent, `${name} must verify the pull request merge parent after checkout`);
+    assert.equal(parent.if, "github.event_name == 'pull_request'");
+  }
 }
 
 test("all Core shards are required and retain independent reports", () => {
@@ -167,7 +182,7 @@ test("all Core shards are required and retain independent reports", () => {
       w.jobs["desktop-core"].if = "success()";
     },
     (w) => {
-      w.jobs["desktop-core-shards"].strategy.matrix.shard = [1, 2, 3];
+      w.jobs["desktop-core-shards"].strategy.matrix.include = "[]";
     },
     (w) => {
       w.jobs["desktop-core-shards"].steps.find((s) => s.name === "Desktop Core (macOS)").run =

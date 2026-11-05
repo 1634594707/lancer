@@ -25,6 +25,10 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -38,6 +42,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
 
       - uses: pnpm/action-setup@v6
 
@@ -76,6 +84,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
+
       - uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v7
@@ -96,6 +108,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -104,19 +120,43 @@ jobs:
           CI_NEEDS: ${{ toJSON(needs) }}
         run: node scripts/check-ci-results.mjs --core-shards
 
+  desktop-core-matrix:
+    name: desktop-core-matrix
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.plan.outputs.include }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
+
+      - id: plan
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        # matrix is not a valid context in a job-level if. Schedule only the
+        # cells that should run: Linux on pull requests, Linux and macOS on main.
+        run: node .github/scripts/desktop-core-matrix.mjs >> "$GITHUB_OUTPUT"
+
   desktop-core-shards:
-    name: Desktop Core (${{ matrix.shard }}/4)
+    name: Desktop Core (${{ matrix.os }} ${{ matrix.shard }}/4)
     # PRs run Core on Linux, which doesn't queue behind the account's few macOS slots.
-    # Pushes to main keep macOS coverage.
-    runs-on: ${{ github.event_name == 'pull_request' && 'ubuntu-latest' || 'macos-latest' }}
+    # Pushes to main run Linux and macOS, so a Linux-only break is caught on main too.
+    needs: desktop-core-matrix
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        include: ${{ fromJSON(needs.desktop-core-matrix.outputs.include) }}
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
 
       - uses: pnpm/action-setup@v6
 
@@ -167,7 +207,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: desktop-core-test-results-${{ matrix.shard }}
+          name: desktop-core-test-results-${{ matrix.os }}-${{ matrix.shard }}
           path: apps/desktop/test-results/
           retention-days: 7
           if-no-files-found: error
@@ -177,6 +217,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
 
       - uses: pnpm/action-setup@v6
 
@@ -202,6 +246,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify pull request merge parent
+        if: github.event_name == 'pull_request'
+        run: node .github/scripts/check-pr-merge-parent.mjs
 
       - uses: pnpm/action-setup@v6
 
