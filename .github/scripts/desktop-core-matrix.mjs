@@ -2,11 +2,9 @@ import { pathToFileURL } from "node:url";
 
 const shards = [1, 2, 3, 4];
 
-/** Pull requests stay on Linux. Pushes to main also schedule the macOS lane. */
-export function desktopCoreMatrixInclude(eventName) {
-  const systems =
-    eventName === "pull_request" ? ["ubuntu-latest"] : ["ubuntu-latest", "macos-latest"];
-  return systems.flatMap((os) => shards.map((shard) => ({ os, shard })));
+/** Linux and macOS both run for pull requests, main pushes, and manual dispatch. */
+export function desktopCoreMatrixInclude(_eventName) {
+  return ["ubuntu-latest", "macos-latest"].flatMap((os) => shards.map((shard) => ({ os, shard })));
 }
 
 export function desktopCoreMatrixOutput(eventName) {
