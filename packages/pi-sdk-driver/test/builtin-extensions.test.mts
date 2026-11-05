@@ -92,6 +92,29 @@ await test("Settings lists a switched-off built-in with its tools and name", asy
   assert.equal(supervisor.builtinExtensionName(join(workspacePath, "ext.ts")), undefined);
 });
 
+await test("hidden required factories load without presenting a misleading disable switch", async () => {
+  const { agentDir, workspacePath } = await createDirs();
+  let loads = 0;
+  const supervisor = new RuntimeSupervisor({
+    agentDir,
+    requiredExtensions: [
+      {
+        name: "host-guard",
+        hidden: true,
+        factory: () => {
+          loads++;
+        },
+      },
+    ],
+  });
+  const snapshot = await supervisor.getRuntimeSnapshot({ workspaceId: "w", path: workspacePath });
+  assert.equal(loads, 1);
+  assert.equal(
+    snapshot.extensions.some((e) => e.path === "<inline:host-guard>"),
+    false,
+  );
+});
+
 await test(
   "a session loads a built-in only while it is switched on, rechecked on reload",
   { timeout: 10_000 },
@@ -118,6 +141,7 @@ await test(
     });
     let enabled = false;
     let loads = 0;
+    let requiredLoads = 0;
     const driver = new PiSdkDriver({
       agentDir,
       catalogFilePath: join(agentDir, "catalogs.json"),
@@ -131,6 +155,14 @@ await test(
         },
       ],
       isBuiltinExtensionEnabled: () => enabled,
+      requiredExtensions: [
+        {
+          name: "host-required",
+          factory: () => {
+            requiredLoads += 1;
+          },
+        },
+      ],
     });
     const { ref } = await driver.createSession(
       { workspaceId: "builtin-workspace", path: workspacePath },
@@ -138,13 +170,16 @@ await test(
     );
     t.after(() => driver.closeSession(ref));
     assert.equal(loads, 0, "a switched-off built-in never registers in a new session");
+    assert.equal(requiredLoads, 1, "host integrations load even when optional built-ins are off");
 
     enabled = true;
     await driver.reloadSession(ref);
     assert.equal(loads, 1, "switching on takes effect on the open session's reload");
+    assert.equal(requiredLoads, 2);
 
     enabled = false;
     await driver.reloadSession(ref);
     assert.equal(loads, 1, "switching off stops it registering again");
+    assert.equal(requiredLoads, 3);
   },
 );
