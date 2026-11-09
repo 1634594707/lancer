@@ -80,8 +80,12 @@ export function ModelReel({
               data-anchor-key={`family:${family.id}`}
               title={
                 family.id === "doubao" && onSelectDoubaoApp
-                  ? `${family.label} · App 直连${count ? ` · ${count} 个可用 API 模型` : ""}`
-                  : `${family.label} · ${count} 个可用模型`
+                  ? `${family.label} · ${
+                      count
+                        ? t("lancer.modelReel.appModels", { count })
+                        : t("lancer.modelReel.appDirect")
+                    }`
+                  : `${family.label} · ${t("lancer.modelReel.modelCount", { count })}`
               }
               className={
                 count || (family.id === "doubao" && onSelectDoubaoApp) ? "" : "unconfigured"
@@ -138,7 +142,7 @@ export function ModelReel({
         {hasAppEntry ? (
           <button
             type="button"
-            aria-label="打开豆包 App"
+            aria-label={t("lancer.modelReel.openDoubao")}
             aria-pressed={Boolean(doubaoActive)}
             disabled={disabled}
             data-testid="catalog-doubao-app"
@@ -149,7 +153,11 @@ export function ModelReel({
           >
             <ModelBrandIcon provider="doubao" />
             <span>
-              打开豆包 App<small>GUI 对话直连{doubaoActive ? " · 当前会话" : ""}</small>
+              {t("lancer.modelReel.openDoubao")}
+              <small>
+                {t("lancer.modelReel.openDoubaoDetail")}
+                {doubaoActive ? ` · ${t("lancer.modelReel.currentSession")}` : ""}
+              </small>
             </span>
           </button>
         ) : null}
